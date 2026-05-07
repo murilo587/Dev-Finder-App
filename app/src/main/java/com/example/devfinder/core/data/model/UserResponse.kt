@@ -14,3 +14,18 @@ data class UserResponse(
     val followers: Int,
     val following: Int
 )
+
+data class SearchUserItem(
+    val id: Long,
+    val login: String,
+    @SerializedName("html_url")
+    val htmlUrl: String
+)
+
+data class UserListResponse(
+    @SerializedName("total_count")
+    val totalCount: Int,
+    @SerializedName("incomplete_results")
+    val incompleteResults: Boolean,
+    val items: List<SearchUserItem>
+)
