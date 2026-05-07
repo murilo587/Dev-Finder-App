@@ -1,5 +1,6 @@
 package com.example.devfinder.core.data.repository
 
+import com.example.devfinder.core.data.model.UserListResponse
 import com.example.devfinder.core.data.model.UserResponse
 import com.example.devfinder.core.domain.GithubRepository
 import com.example.devfinder.core.network.GithubApiService
@@ -25,4 +26,22 @@ class GithubRepositoryImpl @Inject constructor (
                  return Result.failure(e)
             }
         }
+
+    override suspend fun getUsers(query: String): Result<UserListResponse> {
+        try {
+            val response = apiService.getUsers(query)
+            return if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(body)
+                } else {
+                    Result.failure(Exception("Empty Body"))
+                }
+            } else {
+                Result.failure(Exception("Error: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
+    }
 }
