@@ -24,7 +24,7 @@ fun ProfileScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(username) {
-        viewModel.onIntent(ProfileIntent.LoadUser(username))
+        viewModel.handleIntent(ProfileIntent.LoadUser(username))
     }
 
     Column(

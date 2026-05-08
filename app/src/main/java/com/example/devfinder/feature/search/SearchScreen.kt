@@ -37,7 +37,7 @@ fun SearchScreen(
         Spacer(modifier = Modifier.height(76.dp))
         OutlinedTextField(
             value = query,
-            onValueChange = { viewModel.onIntent(SearchIntent.OnQueryChanged(it))},
+            onValueChange = { viewModel.handleIntent(SearchIntent.OnQueryChanged(it))},
             label = { Text("Pesquisar usuário") },
             modifier = Modifier.fillMaxWidth()
         )

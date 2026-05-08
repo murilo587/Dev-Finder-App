@@ -18,7 +18,7 @@ class ProfileViewModel @Inject constructor(
 ): ViewModel() {
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState = _uiState.asStateFlow()
-    fun onIntent(intent: ProfileIntent) {
+    fun handleIntent(intent: ProfileIntent) {
         when (intent) {
             is ProfileIntent.LoadUser -> {
                 fetchUserProfile(intent.username)

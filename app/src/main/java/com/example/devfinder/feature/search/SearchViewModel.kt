@@ -41,7 +41,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun onIntent(intent: SearchIntent) {
+    fun handleIntent(intent: SearchIntent) {
         when (intent) {
             is SearchIntent.OnQueryChanged -> {
                 _query.value = intent.query
