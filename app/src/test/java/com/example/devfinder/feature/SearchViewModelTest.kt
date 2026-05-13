@@ -14,6 +14,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -135,14 +136,44 @@ class SearchViewModelTest {
     }
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `search should not throw exceptions`() = runTest {
-        coEvery { mockRepository.getUsers(any()) } returns
-                Result.success(UserListResponse(0, false, emptyList()))
+    fun `new query should cancel previous search`() = runTest {
+        coEvery { mockRepository.getUsers(any()) } coAnswers {
+            delay(5000)
+            Result.success(
+                UserListResponse(
+                    totalCount = 0,
+                    incompleteResults = false,
+                    items = emptyList()
+                )
+            )
+        }
 
-        shouldNotThrow<Exception> {
+        coEvery { mockRepository.getUsers("kotlin") } returns
+                Result.success(
+                    UserListResponse(
+                        totalCount = 0,
+                        incompleteResults = false,
+                        items = emptyList()
+                    )
+                )
+
+        viewModel.uiState.test {
+            awaitItem() shouldBe SearchUiState.Idle
+            viewModel.handleIntent(SearchIntent.OnQueryChanged("kot"))
+            advanceTimeBy(800)
+
+            awaitItem() shouldBe SearchUiState.Loading
             viewModel.handleIntent(SearchIntent.OnQueryChanged("kotlin"))
             advanceTimeBy(800)
-            advanceUntilIdle()
+            awaitItem().shouldBeInstanceOf<SearchUiState.Success>()
+
+            coVerify(exactly = 1){
+                mockRepository.getUsers("kot")
+            }
+            coVerify(exactly = 1) {
+                mockRepository.getUsers("kotlin")
+            }
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }
