@@ -3,33 +3,45 @@ package com.example.devfinder.feature
 import app.cash.turbine.test
 import com.example.devfinder.core.data.model.SearchUserItem
 import com.example.devfinder.core.data.model.UserListResponse
-import com.example.devfinder.core.data.repository.GithubRepositoryImpl
+import com.example.devfinder.core.domain.GithubRepository
 import com.example.devfinder.feature.search.SearchIntent
 import com.example.devfinder.feature.search.SearchUiState
 import com.example.devfinder.feature.search.SearchViewModel
-import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SearchViewModelTest {
 
     private lateinit var viewModel: SearchViewModel
-    private lateinit var mockRepository: GithubRepositoryImpl
+    private lateinit var mockRepository: GithubRepository
+    private val testDispatcher = StandardTestDispatcher()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeEach
     fun setup() {
+        Dispatchers.setMain(testDispatcher)
         mockRepository = mockk()
         viewModel = SearchViewModel(mockRepository)
+    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @AfterEach
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
     @Test
     fun `initial state should be Idle`() {
@@ -108,6 +120,7 @@ class SearchViewModelTest {
 
             coVerify(exactly = 0) { mockRepository.getUsers(any()) }
             viewModel.uiState.value shouldBe SearchUiState.Idle
+            cancelAndIgnoreRemainingEvents()
         }
     }
     @OptIn(ExperimentalCoroutinesApi::class)
