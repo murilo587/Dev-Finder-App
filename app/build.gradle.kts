@@ -48,6 +48,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.room.runtime.android)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
     implementation(libs.retrofit)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
