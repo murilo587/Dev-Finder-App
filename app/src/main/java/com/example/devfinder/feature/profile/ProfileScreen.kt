@@ -8,9 +8,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +43,7 @@ fun ProfileScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isFavorite by viewModel.isFavorite.collectAsState()
 
     LaunchedEffect(username) {
         viewModel.handleIntent(ProfileIntent.LoadUser(username))
@@ -58,6 +64,19 @@ fun ProfileScreen(
                 }
                 is ProfileUiState.Success -> {
                     Column(modifier = Modifier.fillMaxSize(),horizontalAlignment = Alignment.CenterHorizontally) {
+                        IconButton(
+                            onClick = {
+                                viewModel.handleIntent(ProfileIntent.ToggleFavorite(state.user))
+                            },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                                contentDescription = "Favoritar",
+                                tint = if (isFavorite) Color(0xFFFFD700) else Color.LightGray,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
                         AsyncImage(
                             model = state.user.avatarUrl,
                             contentDescription = "user image",
@@ -73,21 +92,22 @@ fun ProfileScreen(
                         )
                         Spacer(modifier = Modifier.height(26.dp))
                         Text(text = "@${state.user.login}", fontSize = 26.sp)
-                        val bio = if (state.user.bio.length > 30) {
-                            state.user.bio.take(30) + "..."
-                        } else {
-                            state.user.bio
-                        }
-                        if (!state.user.bio.isNullOrBlank()) {
-                            Text(
-                                text = bio,
-                                fontSize = 16.sp,
-                                fontStyle = FontStyle.Italic,
-                                color = Color.Gray,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-                            )
+                        val bio = state.user.bio
+
+                        if (!bio.isNullOrBlank()) {
+                            val displayBio =
+                                if (bio.length > 30) bio.take(30) + "..." else bio
+                            if (state.user.bio.isNotBlank()) {
+                                Text(
+                                    text = displayBio,
+                                    fontSize = 16.sp,
+                                    fontStyle = FontStyle.Italic,
+                                    color = Color.Gray,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                                )
+                            }
                         }
                     }
 
@@ -100,5 +120,4 @@ fun ProfileScreen(
         }
 
     }
-
 }

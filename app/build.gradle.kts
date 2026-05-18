@@ -50,6 +50,7 @@ android {
 dependencies {
     implementation(libs.androidx.room.runtime.android)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.room.ktx)
     implementation(libs.retrofit)
     implementation(libs.coil.compose)
