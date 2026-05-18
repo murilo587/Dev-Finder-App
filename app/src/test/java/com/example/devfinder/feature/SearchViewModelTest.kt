@@ -65,8 +65,8 @@ class SearchViewModelTest {
     @Test
     fun `successful search should emit Idle, Loading, then Success state`() = runTest {
         val mockUsers = listOf(
-            SearchUserItem(id = 1, login = "user1", htmlUrl = "https://github.com/user1", avatarUrl = "picture.png"),
-            SearchUserItem(id = 2, login = "user2", htmlUrl = "https://github.com/user2", avatarUrl = "picture.png")
+            SearchUserItem(id = 1, login = "user1", htmlUrl = "https://github.com/user1", avatarUrl = "picture.png", bio = "bio"),
+            SearchUserItem(id = 2, login = "user2", htmlUrl = "https://github.com/user2", avatarUrl = "picture.png", bio = "bio")
         )
         val mockResponse = UserListResponse(
             totalCount = 2,
