@@ -1,8 +1,10 @@
 package com.example.devfinder.core.data.repository
 
+import com.example.devfinder.core.data.mapper.toDomain
 import com.example.devfinder.core.data.model.SearchUserItem
 import com.example.devfinder.core.data.model.UserListResponse
 import com.example.devfinder.core.data.model.UserResponse
+import com.example.devfinder.core.database.dao.FavoriteDao
 import com.example.devfinder.core.domain.GithubRepository
 import com.example.devfinder.core.network.GithubApiService
 import io.kotest.matchers.shouldBe
@@ -17,11 +19,13 @@ import retrofit2.Response
 class GithubRepositoryImplTest {
     private lateinit var repository: GithubRepository
     private lateinit var mockApiService: GithubApiService
+    private lateinit var mockDao: FavoriteDao
 
     @BeforeEach
     fun setup() {
         mockApiService = mockk()
-        repository = GithubRepositoryImpl(mockApiService)
+        mockDao = mockk(relaxed = true)
+        repository = GithubRepositoryImpl(mockApiService, mockDao)
     }
 
     @Test
@@ -41,7 +45,7 @@ class GithubRepositoryImplTest {
         val result = repository.getUser("kotlin")
 
         result.isSuccess shouldBe true
-        result.getOrNull() shouldBe mockUserResponse
+        result.getOrNull() shouldBe mockUserResponse.toDomain()
     }
     @Test
     fun `getUser with error response returns failure`() = runTest {
@@ -76,12 +80,14 @@ class GithubRepositoryImplTest {
                 login = "mockUser",
                 avatarUrl = "mockAvatarUrl",
                 htmlUrl = "mockHtmlUrl",
+                bio = "mockBio"
             ),
             SearchUserItem(
                 id = 2,
                 login = "mockUser2",
                 avatarUrl = "mockAvatarUrl2",
                 htmlUrl = "mockHtmlUrl2",
+                bio = "mockBio2"
             )
         )
         val mockUserListResponse = UserListResponse(

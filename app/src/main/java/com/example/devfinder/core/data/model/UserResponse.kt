@@ -23,7 +23,8 @@ data class SearchUserItem(
     @SerializedName("html_url")
     val htmlUrl: String,
     @SerializedName("avatar_url")
-    val avatarUrl: String
+    val avatarUrl: String,
+    val bio: String
 )
 
 data class UserListResponse(

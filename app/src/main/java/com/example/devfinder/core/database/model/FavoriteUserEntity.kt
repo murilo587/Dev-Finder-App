@@ -9,5 +9,5 @@ data class FavoriteUserEntity(
     val login: String,
     val avatarUrl: String,
     val htmlUrl: String,
-    val bio: String
+    val bio: String?
 )
