@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.example.devfinder.core.data.model.UserResponse
 import com.example.devfinder.core.data.repository.GithubRepositoryImpl
 import com.example.devfinder.core.domain.GithubRepository
+import com.example.devfinder.core.domain.model.User
 import com.example.devfinder.feature.profile.ProfileIntent
 import com.example.devfinder.feature.profile.ProfileUiState
 import com.example.devfinder.feature.profile.ProfileViewModel
@@ -14,6 +15,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -47,18 +49,15 @@ class ProfileViewModelTest {
 
     @Test
     fun `Success should emit Idle, Loading, Success`() = runTest {
-        val mockUserResponse = UserResponse(
+        val mockUserResponse = User(
             id = 1,
             login = "mockUser",
             avatarUrl = "mockAvatarUrl",
             htmlUrl = "mockHtmlUrl",
-            name = "mockUser",
             bio = "mockBio",
-            followers = 1,
-            following = 1,
-            publicRepos = 1
         )
         coEvery { mockRepository.getUser("kotlin")} returns Result.success(mockUserResponse)
+        coEvery { mockRepository.isFavorite(any()) } returns flowOf(false)
 
         viewModel.uiState.test {
             awaitItem() shouldBe ProfileUiState.Idle
