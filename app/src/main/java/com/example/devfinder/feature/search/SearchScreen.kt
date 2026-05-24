@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,7 +53,7 @@ fun SearchScreen(
 ) {
     val query by viewModel.query.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("Search") }) }) { paddingValues ->
+    Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text(text = "Pesquisar") }, )}) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -95,7 +95,26 @@ fun SearchScreen(
                         )
                     }
                     is SearchUiState.Loading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), )
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(top = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(60.dp),
+                                strokeWidth = 6.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Text(
+                                text = "Buscando desenvolvedores...",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                     is SearchUiState.Success -> {
                         LazyColumn {
@@ -140,7 +159,7 @@ fun SearchScreen(
 }
 
 @Composable
-fun SearchFeedback(text: String, icon: ImageVector, iconContextDescription: String) {
+private fun SearchFeedback(text: String, icon: ImageVector, iconContextDescription: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
