@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.devfinder.core.ui.components.StatusPlaceholder
 import com.example.devfinder.core.ui.components.UserCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,10 +80,17 @@ fun SearchScreen(
             Box(modifier = Modifier.fillMaxSize()) {
                 when (val state = uiState) {
                     is SearchUiState.Idle -> {
-                        SearchFeedback(
+                        StatusPlaceholder(
                             text = "Digite para Buscar...",
                             icon = Icons.Default.PersonSearch,
                             iconContextDescription = "Pesquisar Usuário"
+                        )
+                    }
+                    is SearchUiState.Error -> {
+                        StatusPlaceholder(
+                            text = state.message,
+                            icon = Icons.Default.ErrorOutline,
+                            iconContextDescription = "Erro"
                         )
                     }
                     is SearchUiState.Loading -> {
@@ -117,36 +126,15 @@ fun SearchScreen(
                             }
                         }
                         if (state.users.totalCount == 0) {
-                            SearchFeedback(
+                            StatusPlaceholder(
                                 text = "Nenhum usuário encontrado",
                                 icon = Icons.Default.SearchOff,
                                 iconContextDescription = "Pesquisa não encontrada"
                             )
                         }
                     }
-                    is SearchUiState.Error -> {
-                        Text(text = state.message,
-                            color = MaterialTheme.colorScheme.error)
-                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun SearchFeedback(text: String, icon: ImageVector, iconContextDescription: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = iconContextDescription,
-            modifier = Modifier.size(100.dp),
-        )
-        Text(text = text, fontWeight = FontWeight.Bold, fontSize = 18.sp)
     }
 }
