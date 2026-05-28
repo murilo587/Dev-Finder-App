@@ -57,6 +57,9 @@ class GithubRepositoryImpl @Inject constructor (
             entities.map{ it.toDomain() }
         }
     }
+    override fun getFavoriteUserByName(name: String): User {
+        return dao.getFavoriteUserByName(name)
+    }
     override suspend fun saveFavorite(user: User) {
         dao.insertFavorite(user.toEntity())
     }
@@ -67,5 +70,8 @@ class GithubRepositoryImpl @Inject constructor (
 
     override suspend fun isFavorite(userId: Long): Flow<Boolean> {
         return dao.isFavorite(userId)
+    }
+    override suspend fun updateFavorites(user: List<User>) {
+        return dao.updateFavorites(user.toEntity())
     }
 }
