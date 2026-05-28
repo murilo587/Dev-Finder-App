@@ -14,7 +14,6 @@ fun UserResponse.toDomain(): User {
         bio = this.bio
     )
 }
-
 fun SearchUserItem.toDomain(): User {
     return User(
         id = this.id,
@@ -24,7 +23,6 @@ fun SearchUserItem.toDomain(): User {
         bio = this.bio
     )
 }
-
 fun User.toEntity(): FavoriteUserEntity {
     return FavoriteUserEntity(
         id = this.id,
@@ -34,7 +32,9 @@ fun User.toEntity(): FavoriteUserEntity {
         bio = this.bio
     )
 }
-
+fun List<User>.toEntity(): List<FavoriteUserEntity> {
+    return map { it.toEntity() }
+}
 fun FavoriteUserEntity.toDomain(): User {
     return User(
         id = this.id,
