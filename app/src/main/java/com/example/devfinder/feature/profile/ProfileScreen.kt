@@ -39,15 +39,11 @@ import com.example.devfinder.R
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
-    username: String,
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isFavorite by viewModel.isFavorite.collectAsState()
 
-    LaunchedEffect(username) {
-        viewModel.handleIntent(ProfileIntent.LoadUser(username))
-    }
     Scaffold() { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize()

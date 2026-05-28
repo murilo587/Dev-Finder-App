@@ -1,8 +1,7 @@
 package com.example.devfinder.feature
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
-import com.example.devfinder.core.data.model.UserResponse
-import com.example.devfinder.core.data.repository.GithubRepositoryImpl
 import com.example.devfinder.core.domain.GithubRepository
 import com.example.devfinder.core.domain.model.User
 import com.example.devfinder.feature.profile.ProfileIntent
@@ -34,7 +33,13 @@ class ProfileViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         mockRepository = mockk()
-        viewModel = ProfileViewModel(mockRepository)
+        val savedStateHandle = SavedStateHandle(
+            mapOf(
+                "username" to "kotlin",
+                "isSaved" to false
+            )
+        )
+        viewModel = ProfileViewModel(mockRepository, savedStateHandle)
     }
     @OptIn(ExperimentalCoroutinesApi::class)
     @AfterEach
