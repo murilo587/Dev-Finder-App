@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.fragment.app.FragmentManager
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.devfinder.feature.favorites.FavoritesScreen
+import com.example.devfinder.feature.favorites.FavoritesViewModel
 import com.example.devfinder.feature.profile.ProfileScreen
 import com.example.devfinder.feature.profile.ProfileViewModel
 import com.example.devfinder.feature.search.SearchScreen
@@ -36,12 +39,34 @@ class MainActivity : ComponentActivity() {
                         composable("search") {
                             val viewModel: SearchViewModel = hiltViewModel()
                             SearchScreen(viewModel = viewModel, onUserClick = { username ->
-                                navController.navigate("profile/$username")})
+                                navController.navigate("profile/$username")}, navigateToFavorites = {navController.navigate("favorites")})
                         }
-                        composable("profile/{username}") { backStackEntry ->
-                            val username = backStackEntry.arguments?.getString("username") ?: ""
+                        composable(
+                            route = "profile/{username}?isSaved={isSaved}",
+                            arguments = listOf(
+                                navArgument("username") {
+                                    type = NavType.StringType
+                                },
+                                navArgument("isSaved") {
+                                    type = NavType.BoolType
+                                    defaultValue = false
+                                }
+                            )
+                        ) {
                             val viewModel: ProfileViewModel = hiltViewModel()
-                            ProfileScreen(viewModel = viewModel, username = username, onBackClick = { navController.popBackStack() })
+
+                            ProfileScreen(
+                                viewModel = viewModel,
+                                onBackClick = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
+                        composable("favorites") {
+                            val viewModel: FavoritesViewModel = hiltViewModel()
+                            FavoritesScreen(
+                                viewModel = viewModel,
+                                onUserClick = { username -> navController.navigate("profile/$username?isSaved=true") })
                         }
                     }
                 }
