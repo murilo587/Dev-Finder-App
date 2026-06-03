@@ -15,8 +15,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.PersonSearch
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,12 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.devfinder.core.ui.components.StatusPlaceholder
 import com.example.devfinder.core.ui.components.UserCard
+import com.example.devfinder.core.ui.components.UserInfoCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
-    onUserClick: (String) -> Unit
+    onUserClick: (String, Long) -> Unit,
+    navigateToFavorites: () -> Unit
 ) {
     val query by viewModel.query.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -75,6 +79,9 @@ fun SearchScreen(
                     }
                 }
             )
+            Button(onClick = navigateToFavorites) {
+                Text("Favoritos")
+            }
             Spacer(modifier = Modifier.height(16.dp))
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -119,6 +126,7 @@ fun SearchScreen(
                         LazyColumn {
                             items(state.users.items) { user ->
                                 UserCard(
+                                    userId= user.id,
                                     userLogin = user.login,
                                     userAvatarUrl = user.avatarUrl,
                                     onUserClick = onUserClick
