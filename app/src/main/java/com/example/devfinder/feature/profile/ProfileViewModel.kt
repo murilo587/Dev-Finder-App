@@ -18,7 +18,7 @@ class ProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private val username: String = checkNotNull(savedStateHandle["username"])
-    private val isSaved: Boolean = savedStateHandle.get<Any>("isSaved")?.toString()?.toBoolean() ?: false
+    private val userId: Long = savedStateHandle.get<Any>("userId")?.toString()?.toLongOrNull() ?: error("userId não encontrado")
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState = _uiState.asStateFlow()
     private val _isFavorite = MutableStateFlow(false)
@@ -40,12 +40,40 @@ class ProfileViewModel @Inject constructor(
     private fun loadUserProfile() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = ProfileUiState.Loading
+            val isSaved = repository.checkIsFavoriteDirect(userId)
             if (isSaved) {
                 val localUser = repository.getFavoriteUserByName(username)
                 _uiState.value = ProfileUiState.Success(localUser)
                 observeFavorite(localUser.id)
             } else {
                 fetchUserProfileFromApi(username)
+
+            }
+        }
+    }
+    private fun saveUserData() {
+        viewModelScope.launch {
+            val repos = repository.getRepos(username)
+            val starredRepos = repository.getStarredRepos(username)
+            repos.getOrNull()?.let {
+                repository.saveRepositories(it, userId)
+                println("repos $repos")
+            }
+            starredRepos.getOrNull()?.let {
+                repository.saveStarredRepositories(it, userId)
+                println("starred repos $repos")
+            }
+            println("salvando os repos...")
+        }
+    }
+
+    private fun removeUserData() {
+        viewModelScope.launch {
+            val isSaved = repository.checkIsFavoriteDirect(userId)
+            if (isSaved) {
+                repository.removeRepositories(userId)
+                repository.removeStarredRepositories(userId)
+                println("removido os repos")
             }
         }
     }
@@ -66,7 +94,6 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             repository.isFavorite(userId)
                 .collect { favorite ->
-
                     _isFavorite.value = favorite
                 }
         }
@@ -74,9 +101,11 @@ class ProfileViewModel @Inject constructor(
     private fun toggleFavorite(user: User) {
         viewModelScope.launch {
             if (_isFavorite.value) {
+                removeUserData()
                 repository.removeFavorite(user)
             } else {
                 repository.saveFavorite(user)
+                saveUserData()
             }
         }
     }
