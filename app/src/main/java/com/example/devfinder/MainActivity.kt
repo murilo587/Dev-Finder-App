@@ -1,6 +1,7 @@
 package com.example.devfinder
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +20,8 @@ import com.example.devfinder.feature.favorites.FavoritesScreen
 import com.example.devfinder.feature.favorites.FavoritesViewModel
 import com.example.devfinder.feature.profile.ProfileScreen
 import com.example.devfinder.feature.profile.ProfileViewModel
+import com.example.devfinder.feature.publicrepos.PublicReposScreen
+import com.example.devfinder.feature.publicrepos.PublicReposViewModel
 import com.example.devfinder.feature.search.SearchScreen
 import com.example.devfinder.feature.search.SearchViewModel
 import com.example.devfinder.ui.theme.DevFinderTheme
@@ -38,18 +42,17 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "search") {
                         composable("search") {
                             val viewModel: SearchViewModel = hiltViewModel()
-                            SearchScreen(viewModel = viewModel, onUserClick = { username ->
-                                navController.navigate("profile/$username")}, navigateToFavorites = {navController.navigate("favorites")})
+                            SearchScreen(viewModel = viewModel, onUserClick = { username, userId ->
+                                navController.navigate("profile/$username/$userId")}, navigateToFavorites = {navController.navigate("favorites")})
                         }
                         composable(
-                            route = "profile/{username}?isSaved={isSaved}",
+                            route = "profile/{username}/{userId}",
                             arguments = listOf(
                                 navArgument("username") {
                                     type = NavType.StringType
                                 },
-                                navArgument("isSaved") {
-                                    type = NavType.BoolType
-                                    defaultValue = false
+                                navArgument("userId") {
+                                    type = NavType.LongType
                                 }
                             )
                         ) {
@@ -59,6 +62,12 @@ class MainActivity : ComponentActivity() {
                                 viewModel = viewModel,
                                 onBackClick = {
                                     navController.popBackStack()
+                                },
+                                navigateToPublicRepos = { username, userId ->
+                                    navController.navigate("repos/$username/$userId")
+                                },
+                                navigateToStarredRepos = { username, userId ->
+                                    navController.navigate("repos/$username/$userId?isStarred=true")
                                 }
                             )
                         }
@@ -66,7 +75,24 @@ class MainActivity : ComponentActivity() {
                             val viewModel: FavoritesViewModel = hiltViewModel()
                             FavoritesScreen(
                                 viewModel = viewModel,
-                                onUserClick = { username -> navController.navigate("profile/$username?isSaved=true") })
+                                onUserClick = { username, userId -> navController.navigate("profile/$username/$userId") },
+                                onBackClick = { navController.popBackStack()} )
+                        }
+                        composable(
+                            route = "repos/{username}/{userId}?isStarred={isStarred}",
+                            arguments = listOf(
+                                navArgument("username") { type = NavType.StringType },
+                                navArgument("userId") {
+                                    type = NavType.LongType
+                                },
+                                navArgument("isStarred") {
+                                    type = NavType.BoolType
+                                    defaultValue = false
+                                }
+                            )
+                        ) {
+                            val viewModel: PublicReposViewModel = hiltViewModel()
+                            PublicReposScreen(viewModel = viewModel, onBackClick = {navController.popBackStack()})
                         }
                     }
                 }
