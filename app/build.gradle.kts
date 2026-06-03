@@ -37,6 +37,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
     }
@@ -48,6 +49,7 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.room.runtime.android)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.compose.material.icons.extended)

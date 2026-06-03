@@ -3,6 +3,7 @@ agp = "9.1.1"
 coilCompose = "3.4.0"
 converterGson = "2.9.0"
 coreKtx = "1.18.0"
+desugar_jdk_libs = "2.1.5"
 hiltAndroid = "2.57.1"
 hiltAndroidCompiler = "2.59.2"
 hiltAndroidVersion = "2.59.2"
@@ -37,6 +38,7 @@ androidx-room-runtime-android = { module = "androidx.room:room-runtime-android",
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 hilt-android-compiler-v2592 = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
