@@ -59,15 +59,15 @@ class GithubRepositoryImpl @Inject constructor (
             entities.map{ it.toDomain() }
         }
     }
-    override fun getFavoriteUserByName(name: String): User {
-        return dao.getFavoriteUserByName(name)
+    override fun getFavoriteUserByName(name: String): User? {
+        return dao.getFavoriteUserByName(name)?.toDomain()
     }
-    override suspend fun getLocalRepositories(userId: Long): Flow<List<Repo>> {
+    override fun getLocalRepositories(userId: Long): Flow<List<Repo>> {
         return dao.getLocalRepositories(userId).map { entities ->
             entities.map{ it.toDomain() }
         }
     }
-    override suspend fun getLocalStarredRepositories(userId: Long): Flow<List<Repo>> {
+    override fun getLocalStarredRepositories(userId: Long): Flow<List<Repo>> {
         return dao.getLocalStarredRepositories(userId).map { entities ->
             entities.map { it.toDomain() }
         }
@@ -94,13 +94,13 @@ class GithubRepositoryImpl @Inject constructor (
         return dao.isFavorite(userId)
     }
     override suspend fun updateFavorites(user: List<User>) {
-        return dao.updateFavorites(user.toEntity())
+        dao.updateFavorites(user.toEntity())
     }
     override suspend fun updateRepositories(repos: List<Repo>, userId: Long) {
-        return dao.updateLocalRepositories(repos.toUserRepositoryEntity(userId))
+        dao.updateLocalRepositories(repos.toUserRepositoryEntity(userId))
     }
     override suspend fun updateStarredRepositories(repos: List<Repo>, userId: Long) {
-        return dao.updateLocalStarredRepositories(repos.toUserStarredEntity(userId))
+        dao.updateLocalStarredRepositories(repos.toUserStarredEntity(userId))
     }
     override suspend fun checkIsFavoriteDirect(userId: Long): Boolean {
         return dao.checkIsFavoriteDirect(userId)

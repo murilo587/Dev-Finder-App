@@ -9,9 +9,9 @@ interface GithubRepository {
     suspend fun getUser(username: String): Result<User>
     suspend fun getUsers(query: String): Result<UserListResponse>
     fun getFavorites(): Flow<List<User>>
-    fun getFavoriteUserByName(name: String): User
-    suspend fun getLocalRepositories(userId: Long): Flow<List<Repo>>
-    suspend fun getLocalStarredRepositories(userId: Long): Flow<List<Repo>>
+    fun getFavoriteUserByName(name: String): User?
+    fun getLocalRepositories(userId: Long): Flow<List<Repo>>
+    fun getLocalStarredRepositories(userId: Long): Flow<List<Repo>>
     suspend fun saveFavorite(user: User)
     suspend fun saveRepositories(repos: List<Repo>, userId: Long)
     suspend fun saveStarredRepositories(repos: List<Repo>, userId: Long)

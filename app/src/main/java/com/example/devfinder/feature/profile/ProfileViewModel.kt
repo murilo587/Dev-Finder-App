@@ -41,13 +41,12 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = ProfileUiState.Loading
             val isSaved = repository.checkIsFavoriteDirect(userId)
-            if (isSaved) {
-                val localUser = repository.getFavoriteUserByName(username)
+            val localUser = repository.getFavoriteUserByName(username)
+            if (isSaved && localUser != null) {
                 _uiState.value = ProfileUiState.Success(localUser)
                 observeFavorite(localUser.id)
             } else {
                 fetchUserProfileFromApi(username)
-
             }
         }
     }

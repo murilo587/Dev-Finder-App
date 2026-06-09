@@ -17,7 +17,7 @@ interface FavoriteDao {
     @Query("SELECT * FROM favorites")
     fun getFavorites(): Flow<List<FavoriteUserEntity>>
     @Query("SELECT * FROM favorites WHERE login = :name")
-    fun getFavoriteUserByName(name: String): User
+    fun getFavoriteUserByName(name: String): FavoriteUserEntity?
     @Query("SELECT * FROM user_repositories WHERE userid = :userId")
     fun getLocalRepositories(userId: Long): Flow<List<UserRepositoryEntity>>
     @Query("SELECT * FROM user_starred_repositories WHERE userid = :userId")
