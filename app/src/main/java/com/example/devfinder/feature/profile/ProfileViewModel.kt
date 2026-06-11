@@ -3,10 +3,11 @@ package com.example.devfinder.feature.profile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.devfinder.core.di.IoDispatcher
 import com.example.devfinder.core.domain.GithubRepository
 import com.example.devfinder.core.domain.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val repository: GithubRepository,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private val username: String = checkNotNull(savedStateHandle["username"])
@@ -38,7 +40,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
     private fun loadUserProfile() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.value = ProfileUiState.Loading
             val isSaved = repository.checkIsFavoriteDirect(userId)
             val localUser = repository.getFavoriteUserByName(username)
@@ -56,13 +58,10 @@ class ProfileViewModel @Inject constructor(
             val starredRepos = repository.getStarredRepos(username)
             repos.getOrNull()?.let {
                 repository.saveRepositories(it, userId)
-                println("repos $repos")
             }
             starredRepos.getOrNull()?.let {
                 repository.saveStarredRepositories(it, userId)
-                println("starred repos $repos")
             }
-            println("salvando os repos...")
         }
     }
 
@@ -72,7 +71,6 @@ class ProfileViewModel @Inject constructor(
             if (isSaved) {
                 repository.removeRepositories(userId)
                 repository.removeStarredRepositories(userId)
-                println("removido os repos")
             }
         }
     }
