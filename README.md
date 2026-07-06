@@ -56,4 +56,4 @@ A testabilidade foi um pilar central no desenvolvimento do projeto. O código po
 
 1. Faça o clone deste repositório:
    ```bash
-   git clone https://github.com/murilo587/dev-finder.git
+   git clone https://github.com/murilo587/Dev-Finder-App.git
